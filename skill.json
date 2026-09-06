@@ -1,0 +1,15 @@
+{
+  "name": "genpark-prompt-injection-jailbreak-detector-skill",
+  "version": "1.0.0",
+  "description": "Heuristic and statistical prompt injection and jailbreak detector with semantic delimiter protection and adversarial pattern scoring.",
+  "author": "GenPark AI",
+  "license": "MIT",
+  "keywords": [
+    "prompt-injection",
+    "jailbreak",
+    "guardrails",
+    "security",
+    "genpark",
+    "mcp"
+  ]
+}
