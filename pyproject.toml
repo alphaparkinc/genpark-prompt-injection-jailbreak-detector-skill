@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genpark-prompt-injection-jailbreak-detector-skill"
+version = "1.0.0"
+description = "Multi-stage regex and semantic pattern scanner detecting prompt injections, jailbreaks, and system prompt override attacks"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
