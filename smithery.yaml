@@ -1,0 +1,6 @@
+name: genpark-prompt-injection-jailbreak-detector-skill
+version: 1.0.0
+description: Multi-stage regex and semantic pattern scanner detecting prompt injections, jailbreaks, and system prompt override attacks
+command: python
+args:
+  - mcp_server.py
