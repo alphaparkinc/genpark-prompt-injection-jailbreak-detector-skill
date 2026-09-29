@@ -1,20 +1,22 @@
-"""
-MCP Server for genpark-prompt-injection-jailbreak-detector-skill
-Standard JSON-RPC 2.0 protocol over stdio.
-"""
-
 import sys
 import json
-from client import PromptInjectionDetectorClient
-
-detector = PromptInjectionDetectorClient()
+from client import PromptInjectionDetector
 
 def handle_request(req):
-    req_id = req.get("id")
     method = req.get("method")
-    params = req.get("params", {})
-
-    if method == "tools/list":
+    req_id = req.get("id")
+    
+    if method == "initialize":
+        return {
+            "jsonrpc": "2.0",
+            "id": req_id,
+            "result": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {"tools": {}},
+                "serverInfo": {"name": "genpark-prompt-injection-jailbreak-detector-skill", "version": "1.0.0"}
+            }
+        }
+    elif method == "tools/list":
         return {
             "jsonrpc": "2.0",
             "id": req_id,
@@ -22,11 +24,11 @@ def handle_request(req):
                 "tools": [
                     {
                         "name": "scan_prompt_safety",
-                        "description": "Inspect user prompt for prompt injection or jailbreak attempts.",
+                        "description": "Scan incoming user prompt for prompt injection or jailbreak attempts",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
-                                "prompt": {"type": "string"}
+                                "prompt": {"type": "string", "description": "Incoming user prompt"}
                             },
                             "required": ["prompt"]
                         }
@@ -35,10 +37,13 @@ def handle_request(req):
             }
         }
     elif method == "tools/call":
+        params = req.get("params", {})
         tool_name = params.get("name")
         args = params.get("arguments", {})
+        
         if tool_name == "scan_prompt_safety":
-            res = detector.evaluate_prompt(args["prompt"])
+            p = args.get("prompt", "")
+            res = PromptInjectionDetector.scan(p)
             return {
                 "jsonrpc": "2.0",
                 "id": req_id,
@@ -46,7 +51,6 @@ def handle_request(req):
                     "content": [{"type": "text", "text": json.dumps(res)}]
                 }
             }
-
     return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32601, "message": "Method not found"}}
 
 def main():
@@ -59,8 +63,8 @@ def main():
             sys.stdout.write(json.dumps(res) + "\n")
             sys.stdout.flush()
         except Exception as e:
-            err_res = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": str(e)}}
-            sys.stdout.write(json.dumps(err_res) + "\n")
+            err = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": str(e)}}
+            sys.stdout.write(json.dumps(err) + "\n")
             sys.stdout.flush()
 
 if __name__ == "__main__":
